@@ -32,7 +32,7 @@ ENV HOME=/tmp
 
 which you can try out: [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/binder-examples/minimal-dockerfile/truly-minimal)
 
-However, it would be better to consume the NB_UID/NB_USER arguments and create a real user:
+However, it would be better to consume the NB_UID/NB_USER arguments, create a real user, and allow the target path to be configurable:
 
 ```docker
 # create user with a home directory
@@ -45,7 +45,12 @@ RUN adduser --disabled-password \
     --gecos "Default user" \
     --uid ${NB_UID} \
     ${NB_USER}
-WORKDIR ${HOME}
+
+# Allow target path repo is cloned to be configurable
+ARG REPO_DIR=${HOME}
+ENV REPO_DIR ${REPO_DIR}
+WORKDIR ${REPO_DIR}
+RUN chown ${NB_USER}:${NB_USER} ${REPO_DIR}
 ```
 
 From this point, you can start adding files, installing packages, etc.
